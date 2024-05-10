@@ -1,4 +1,4 @@
-package com.example.fresh.firebase.models
+package com.example.fresh.domain.models
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

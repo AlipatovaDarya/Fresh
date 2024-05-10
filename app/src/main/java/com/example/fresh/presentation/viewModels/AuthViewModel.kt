@@ -2,7 +2,7 @@ package com.example.fresh.presentation.viewModels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fresh.firebase.repositories.AuthAppRepository
+import com.example.fresh.data.repositories.AuthAppRepository
 import com.google.firebase.auth.FirebaseUser
 
 class AuthViewModel() : ViewModel() {

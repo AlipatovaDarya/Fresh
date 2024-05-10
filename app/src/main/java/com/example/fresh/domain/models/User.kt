@@ -1,4 +1,4 @@
-package com.example.fresh.firebase.models
+package com.example.fresh.domain.models
 
 data class User(
     val id: Long?,
@@ -6,5 +6,6 @@ data class User(
     val lastName: String,
     val email: String,
     val role: String,
-    val grade: Long = 0
+    val score: Long = 0
 )
+

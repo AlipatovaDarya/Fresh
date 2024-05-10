@@ -1,4 +1,4 @@
-package com.example.fresh.firebase.models
+package com.example.fresh.domain.models
 
 data class Author(
     val id: Long?,
@@ -7,3 +7,4 @@ data class Author(
     val description: String?,
     var isExpert: Boolean = false,
 )
+

@@ -1,4 +1,4 @@
-package com.example.fresh.sources
+package com.example.fresh.presentation.ui.sources
 
 import androidx.compose.ui.graphics.vector.ImageVector
 

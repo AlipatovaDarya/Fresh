@@ -13,7 +13,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.fresh.sources.ConstantsBottomBar
+import com.example.fresh.presentation.ui.sources.ConstantsBottomBar
 import com.example.fresh.presentation.ui.EventScreen
 import com.example.fresh.presentation.ui.AuthorListScreen
 import com.example.fresh.presentation.ui.AuthorScreen

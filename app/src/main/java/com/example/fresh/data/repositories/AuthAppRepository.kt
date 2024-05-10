@@ -1,4 +1,4 @@
-package com.example.fresh.firebase.repositories
+package com.example.fresh.data.repositories
 
 import androidx.compose.material3.Snackbar
 import androidx.lifecycle.MutableLiveData
