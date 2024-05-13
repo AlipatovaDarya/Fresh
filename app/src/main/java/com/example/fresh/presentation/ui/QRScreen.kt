@@ -11,9 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavHostController
 import com.example.fresh.R
+import com.example.fresh.presentation.viewModels.AuthViewModel
 
 @Composable
-fun QRScreen() {
+fun QRScreen(navController: NavHostController, viewModelState: AuthViewModel) {
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,

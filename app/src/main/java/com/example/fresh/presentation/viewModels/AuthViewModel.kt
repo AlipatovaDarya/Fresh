@@ -20,20 +20,7 @@ class AuthViewModel() : ViewModel() {
         authStateLiveData = authAppRepository.authStateLiveData
     }
 
-
-    /*fun getAuthStateLiveData(): MutableLiveData<AuthState> {
-        return authStateLiveData
-    }
-
-    fun getUserLiveData(): MutableLiveData<FirebaseUser?>? {
-        return userLiveData
-    }
-
-    fun getErrorMessageLiveData(): MutableLiveData<String> {
-        return errorMessageLiveData
-    }*/
-
-    fun registerUser(email: String, password: String) {
+    fun registerUser(email: String, password: String){
         authAppRepository.registerUser(email, password)
     }
 

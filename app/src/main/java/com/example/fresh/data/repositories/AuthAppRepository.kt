@@ -1,6 +1,5 @@
 package com.example.fresh.data.repositories
 
-import androidx.compose.material3.Snackbar
 import androidx.lifecycle.MutableLiveData
 import com.example.fresh.presentation.viewModels.AuthState
 import com.google.firebase.Firebase
@@ -18,6 +17,8 @@ class AuthAppRepository() {
     var errorMessageLiveData : MutableLiveData<String>
 
     var authStateLiveData: MutableLiveData<AuthState>
+
+    val rep = UserRepository()
 
 
     init {
@@ -39,19 +40,6 @@ class AuthAppRepository() {
         }
     }
 
-    /*fun getAuthStateLiveData(): MutableLiveData<AuthState> {
-        return authStateLiveData
-    }
-
-    fun getUserLiveData(): MutableLiveData<FirebaseUser?>? {
-        return userLiveData
-    }
-
-    fun getErrorMessageLiveData(): MutableLiveData<String> {
-        return errorMessageLiveData
-    }*/
-
-
     fun registerUser(email: String, password: String) {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -66,13 +54,16 @@ class AuthAppRepository() {
             }
     }
 
+
     fun loginUser(email: String, password: String){
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = firebaseAuth.currentUser
                     userLiveData.postValue(user)
-                    authStateLiveData.postValue(AuthState.AUTHENTICATED)
+                    val userInfo = rep.getUser(userLiveData.value?.uid)
+                    val role = AuthState.valueOf(userInfo?.role.toString())
+                    authStateLiveData.postValue(role)
                 } else {
                     errorMessageLiveData.postValue(task.exception!!.message)
                 }
@@ -118,6 +109,4 @@ class AuthAppRepository() {
                 }
         }
     }
-
-
 }

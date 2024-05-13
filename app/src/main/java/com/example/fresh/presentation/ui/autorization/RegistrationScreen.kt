@@ -1,6 +1,6 @@
 package com.example.fresh.presentation.ui.autorization
 
-import android.util.Patterns
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
@@ -20,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,12 +33,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fresh.R
+import com.example.fresh.data.repositories.UserRepository
+import com.example.fresh.domain.models.User
+import com.example.fresh.presentation.ui.common.MySnackBar
 import com.example.fresh.presentation.ui.common.TopBar
+import com.example.fresh.presentation.viewModels.AuthInputViewModel
+import com.example.fresh.presentation.viewModels.AuthState
 import com.example.fresh.presentation.viewModels.AuthViewModel
+import com.example.fresh.presentation.viewModels.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistrationScreen(navController: NavHostController) {
+fun RegistrationScreen(navController: NavHostController, viewModelState: AuthViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,12 +63,25 @@ fun RegistrationScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
         ) {
 
-            val textEmail = remember { mutableStateOf("") }
-            val isValidEmail = remember { mutableStateOf(false) }
+            val inputViewModel = AuthInputViewModel()
+            val isCorrectName = inputViewModel.isCorrectName.observeAsState(true)
+            val isCorrectLastName = inputViewModel.isCorrectLastName.observeAsState(true)
+            val isCorrectEmail = inputViewModel.isCorrectEmail.observeAsState(true)
+            val isCorrectPassword1 = inputViewModel.isCorrectPassword1.observeAsState(true)
+            val isCorrectPassword2 = inputViewModel.isCorrectPassword2.observeAsState(true)
 
-            //поле ввода почты
+            val email = remember { mutableStateOf("") }
+            val name = remember { mutableStateOf("") }
+            val lastName = remember { mutableStateOf("") }
+            val password1 = remember { mutableStateOf("") }
+            val password2 = remember { mutableStateOf("") }
+
+
+            val isEnteredData = remember { mutableStateOf(false) }
+
+            //Ввод email
             OutlinedTextField(
-                value = textEmail.value,
+                value = email.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedLabelColor = colorResource(id = R.color.dark_gray),
                     unfocusedBorderColor = colorResource(id = R.color.dark_gray),
@@ -72,31 +91,28 @@ fun RegistrationScreen(navController: NavHostController) {
                     containerColor = colorResource(id = R.color.beige)
                 ),
                 onValueChange = {
-                    textEmail.value = it
-                    isValidEmail.value = android.util.Patterns.EMAIL_ADDRESS.matcher(it).matches()
+                    email.value = it
+                    //emailWasEntered.value = true
                 },
                 label = { Text(stringResource(id = R.string.email)) },
                 placeholder = { Text("Введите email") },
-                isError = !isValidEmail.value && textEmail.value.isNotEmpty(),
-                modifier = Modifier.padding(vertical = 20.dp),
+                isError = isEnteredData.value && !isCorrectEmail.value,
+                modifier = Modifier.padding(vertical = 10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 trailingIcon = {
-                    if (textEmail.value.isNotEmpty() && !isValidEmail.value) {
+                    if ((isEnteredData.value && !isCorrectEmail.value)) {
                         Icon(Icons.Filled.Close, contentDescription = "Введите email", tint = Color.Red)
                     }
                 }
             )
-            if (!isValidEmail.value && textEmail.value.isNotEmpty()) {
-                Text("Введён некорректный email", color = Color.Red, modifier = Modifier.padding(start = 16.dp))
-            }
+//            if (!isCorrectEmail.value) {
+//                Text("Введён некорректный email", color = Color.Red, modifier = Modifier.padding(start = 16.dp))
+//            }
+            inputViewModel.checkEmail(email.value)
 
-
-            val textUserName = remember { mutableStateOf("") }
-            val isValidUserName = remember { mutableStateOf(false) }
-
-            /*//поле ввода имени пользователя
+            //поле ввода имени пользователя
             OutlinedTextField(
-                value = textUserName.value,
+                value = name.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedLabelColor = colorResource(id = R.color.dark_gray),
                     unfocusedBorderColor = colorResource(id = R.color.dark_gray),
@@ -106,29 +122,59 @@ fun RegistrationScreen(navController: NavHostController) {
                     containerColor = colorResource(id = R.color.beige),
                 ),
                 onValueChange = {
-                    textUserName.value = it
-                    isValidUserName.value = textUserName.value.isNotEmpty()
+                    name.value = it
+                    //nameWasEntered.value = true
                 },
                 label = {Text(stringResource(id = R.string.user_name),)},
                 placeholder = { Text(stringResource(id = R.string.enter_user_name),)},
-                modifier = Modifier.padding(vertical = 20.dp),
+                isError = isEnteredData.value && !isCorrectName.value,
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
-                    if (!isValidUserName.value && textUserName.value.isEmpty()) {
+                    if ((isEnteredData.value && !isCorrectName.value)) {
                         Icon(Icons.Filled.Close, contentDescription = "Некорректный ввод", tint = Color.Red)
                     }
                 },
             )
-            if (!isValidUserName.value && textUserName.value.isNotEmpty()) {
-                Text(stringResource(id = R.string.enter_user_name), color = Color.Red, modifier = Modifier.padding(start = 16.dp))
-            }*/
+//            if (!isCorrectName.value) {
+//                Text(stringResource(id = R.string.enter_user_name), color = Color.Red, modifier = Modifier.padding(start = 16.dp))
+//            }
+            inputViewModel.checkName(name.value)
 
 
-            val textPassword = remember { mutableStateOf("") }
-            val isValidPassword = remember { mutableStateOf(false) }
+            //поле ввода фамилии пользователя
+            OutlinedTextField(
+                value = lastName.value,
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    unfocusedLabelColor = colorResource(id = R.color.dark_gray),
+                    unfocusedBorderColor = colorResource(id = R.color.dark_gray),
+                    focusedLabelColor = colorResource(id = R.color.dark_gray),
+                    focusedBorderColor = colorResource(id = R.color.dark_gray),
+                    textColor = colorResource(id = R.color.dark_gray),
+                    containerColor = colorResource(id = R.color.beige),
+                ),
+                onValueChange = {
+                    lastName.value = it
+                    //lastNameWasEntered.value = true
+                },
+                label = {Text("Фамилия")},
+                placeholder = { Text("Введите фамилию")},
+                isError = isEnteredData.value && !isCorrectLastName.value,
+                modifier = Modifier.padding(vertical = 10.dp),
+                trailingIcon = {
+                    if ((isEnteredData.value && !isCorrectLastName.value)) {
+                        Icon(Icons.Filled.Close, contentDescription = "Некорректный ввод", tint = Color.Red)
+                    }
+                },
+            )
+//            if (!isCorrectLastName.value) {
+//                Text("Введите фамилию", color = Color.Red, modifier = Modifier.padding(start = 16.dp))
+//            }
+            inputViewModel.checkLastName(lastName.value)
+
 
             // ввод пароля
             OutlinedTextField(
-                value = textPassword.value,
+                value = password1.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedLabelColor = colorResource(id = R.color.dark_gray),
                     unfocusedBorderColor = colorResource(id = R.color.dark_gray),
@@ -140,28 +186,26 @@ fun RegistrationScreen(navController: NavHostController) {
                 visualTransformation = PasswordVisualTransformation(),
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
                 onValueChange = {
-                    textPassword.value = it
-                    isValidPassword.value = textPassword.value.isNotEmpty()
+                    password1.value = it
+                    //password1WasEntered.value = true
                 },
                 label = { Text(stringResource(id = R.string.password)) },
                 placeholder = { Text(stringResource(id = R.string.enter_password)) },
-                isError = !isValidPassword.value && textPassword.value.isNotEmpty(),
-                modifier = Modifier.padding(vertical = 20.dp),
+                isError = isEnteredData.value && !isCorrectPassword1.value,
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
-                    if (textPassword.value.isNotEmpty() && !isValidPassword.value) {
+                    if ((isEnteredData.value && !isCorrectPassword1.value)) {
                         Icon(Icons.Filled.Close, contentDescription = "Введите имя пользователя", tint = Color.Red)
                     }
                 }
             )
-            if (!isValidPassword.value && textPassword.value.isNotEmpty()) {
-                Text(stringResource(id = R.string.enter_password), color = Color.Red, modifier = Modifier.padding(start = 16.dp))
-            }
+//            if (!isCorrectPassword1.value) {
+//                Text(stringResource(id = R.string.enter_password), color = Color.Red, modifier = Modifier.padding(start = 16.dp))
+//            }
+            inputViewModel.checkPassword1(password1.value)
 
-            val textPassword2 = remember { mutableStateOf("") }
-            val isValidPassword2 = remember { mutableStateOf(false) }
-
-            /*OutlinedTextField(
-                value = textPassword2.value,
+            OutlinedTextField(
+                value = password2.value,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     unfocusedLabelColor = colorResource(id = R.color.dark_gray),
                     unfocusedBorderColor = colorResource(id = R.color.dark_gray),
@@ -171,60 +215,80 @@ fun RegistrationScreen(navController: NavHostController) {
                     containerColor = colorResource(id = R.color.beige)
                 ),
                 onValueChange = {
-                    textPassword2.value = it
-                    isValidPassword2.value = textPassword2.value.equals(textPassword.value)
+                    password2.value = it
+                    //password2WasEntered.value = true
                 },
                 label = {Text(stringResource(id = R.string.confirm_password))},
                 placeholder = { Text(stringResource(id = R.string.enter_password2)) },
-                isError = !isValidPassword2.value && textPassword2.value.isNotEmpty(),
-                modifier = Modifier.padding(vertical = 20.dp),
+                isError = isEnteredData.value && !isCorrectPassword2.value,
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
-                    if (isValidPassword2.value) {
-                        Icon(Icons.Filled.Check, contentDescription = "", tint = Color.Green)
-                    } else if (textPassword2.value.isNotEmpty()) {
+                    if(isEnteredData.value && !isCorrectPassword2.value){
                         Icon(Icons.Filled.Close, contentDescription = "Пароли не совпадают", tint = Color.Red)
+
                     }
+                    /*if (!(isEnteredData.value && !isCorrectPassword1.value)) {
+                        //Icon(Icons.Filled.Check, contentDescription = "", tint = Color.Green)
+                    } else {
+                        Icon(Icons.Filled.Close, contentDescription = "Пароли не совпадают", tint = Color.Red)
+                    }*/
                 },
                 visualTransformation = PasswordVisualTransformation(),
                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
             )
-            if (!isValidPassword2.value && textPassword2.value.isNotEmpty()) {
-                Text("Пароли не совпадают", color = Color.Red, modifier = Modifier.padding(start = 16.dp))
-            }*/
+//            if (!isCorrectPassword2.value) {
+//                Text("Пароли не совпадают", color = Color.Red, modifier = Modifier.padding(start = 16.dp))
+//            }
+            inputViewModel.checkPassword2(password1.value, password2.value)
 
-            val authViewModel = viewModel<AuthViewModel>()
+            //val authViewModel = viewModel<AuthViewModel>()
+            val isCorrectAll = remember { mutableStateOf(true) }
+            //var error = ""
+            val userViewModel = UserViewModel()
 
             Button(
                 modifier = Modifier.padding(top = 20.dp),
                 onClick = {
-                    authViewModel.registerUser(textEmail.value, textPassword.value)
+                    isEnteredData.value = true
 
-                    /*var flag = true
-                    if (!textUserName.value.isNotEmpty()) {
-                        flag = false
+                    if(inputViewModel.isRegisterCorrect()){
+                        viewModelState.registerUser(email.value, password1.value)
+                            if(viewModelState.userLiveData.value?.uid != null){
+                                isCorrectAll.value = true
+                                userViewModel.addUser(
+                                    User(
+                                        viewModelState.userLiveData.value?.uid!!,
+                                        name.value,
+                                        lastName.value,
+                                        email.value,
+                                        AuthState.AUTHENTICATED,
+                                        0L
+                                    )
+                                )
+                                navController.navigate("homeScreen")
+                            }else{
+                                isCorrectAll.value = false
+                                viewModelState.deleteAccount()
+                            }
+                    } else{
+                        //Log.e("МОЯ ОШИБКА", "Заполните корректно все поля")
+                        //error = "Заполните корректно все поля"
+                        isCorrectAll.value = false
                     }
-                    if (!isValidPassword.value){
-                        flag = false
-                    }
-                    if (!isValidEmail.value){
-                        flag = false
-                    }
-                    if (!isValidPassword2.value){
-                        flag = false
-                    }
-                    if(flag){*/
-                    navController.navigate("homeScreen")
-                    //}
+
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(id = R.color.orange)
                 ),
-
             ) {
                 Text(stringResource(id = R.string.to_register))
             }
 
-        }
+            if(!isCorrectAll.value){
+                MySnackBar("Заполните корректно все поля")
+            }
 
+
+        }
     }
 }

@@ -65,6 +65,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-navigation-animation:0.28.0")
     implementation("androidx.core:core-ktx:+")
     implementation("com.kizitonwose.calendar:compose:2.0.0")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))

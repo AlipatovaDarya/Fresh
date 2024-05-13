@@ -1,11 +1,13 @@
 package com.example.fresh.domain.models
 
+import com.example.fresh.presentation.viewModels.AuthState
+
 data class User(
-    val id: Long?,
-    val firstName: String,
-    val lastName: String,
-    val email: String,
-    val role: String,
-    val score: Long = 0
+    val uid: String,
+    val firstName: String?,
+    val lastName: String?,
+    val email: String?,
+    val role: AuthState?,
+    val score: Long = 0L
 )
 

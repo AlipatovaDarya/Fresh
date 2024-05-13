@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,9 +27,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.fresh.R
 import com.example.fresh.presentation.ui.common.TopBar
+import com.example.fresh.presentation.viewModels.AuthViewModel
 
 @Composable
-fun EventScreen(navController: NavHostController, Authors: List<String>){
+fun EventScreen(
+    navController: NavHostController,
+    Authors: List<String>,
+    viewModelState: AuthViewModel
+){
     Column(
         modifier = Modifier
             .background(color = colorResource(id = R.color.beige))

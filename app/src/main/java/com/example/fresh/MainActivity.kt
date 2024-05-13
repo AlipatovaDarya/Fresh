@@ -26,6 +26,7 @@ import com.example.fresh.presentation.ui.RankingScreen
 import com.example.fresh.presentation.ui.autorization.AutorisationScreen
 import com.example.fresh.presentation.ui.autorization.LoginScreen
 import com.example.fresh.presentation.ui.autorization.RegistrationScreen
+import com.example.fresh.presentation.viewModels.AuthViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -40,6 +41,10 @@ class MainActivity : ComponentActivity() {
             FreshTheme {
                 val navController: NavHostController = rememberAnimatedNavController()
                 val isShowBottomBar = remember { mutableStateOf(false) }
+
+                val viewModelState = AuthViewModel()
+
+
                 Surface(color = MaterialTheme.colorScheme.surface) {
                     Scaffold(
                         bottomBar = {
@@ -50,7 +55,8 @@ class MainActivity : ComponentActivity() {
                             AppScreen(
                                 isShowBottomBar = isShowBottomBar,
                                 navController = navController,
-                                padding = padding
+                                padding = padding,
+                                viewModelState = viewModelState
                             )
                         }
                     )
@@ -90,7 +96,8 @@ fun BottomNavigationBar(navController: NavHostController) {
 fun AppScreen(
     navController: NavHostController,
     padding: PaddingValues,
-    isShowBottomBar: MutableState<Boolean>
+    isShowBottomBar: MutableState<Boolean>,
+    viewModelState: AuthViewModel,
 ) {
     AnimatedNavHost(
         modifier = Modifier.padding(paddingValues = padding),
@@ -102,11 +109,11 @@ fun AppScreen(
                 isShowBottomBar.value = false
             }
             composable(route = "loginScreen") {
-                LoginScreen(navController = navController)
+                LoginScreen(navController = navController, viewModelState)
                 isShowBottomBar.value = false
             }
             composable(route = "registrationScreen") {
-                RegistrationScreen(navController = navController)
+                RegistrationScreen(navController = navController, viewModelState)
                 isShowBottomBar.value = false
             }
             composable(route = "homeScreen") {
@@ -114,11 +121,11 @@ fun AppScreen(
                 isShowBottomBar.value = true
             }
             composable(route = "calendarScreen") {
-                CalendarScreen()
+                CalendarScreen(navController, viewModelState)
                 isShowBottomBar.value = true
             }
             composable(route = "qrScreen") {
-                QRScreen()
+                QRScreen(navController, viewModelState)
                 isShowBottomBar.value = true
             }
             composable(route = "rankingListScreen") {
@@ -131,7 +138,7 @@ fun AppScreen(
                         "Name 1",
                         "Name 2",
                         "Name 3",
-                    )
+                    ),
                 )
                 isShowBottomBar.value = true
             }
@@ -141,8 +148,7 @@ fun AppScreen(
                     "Name 1",
                     "Name 2",
                     "Name 3",
-                        )
-                )
+                        ),)
                 isShowBottomBar.value = true
             }
             composable(route = "authorScreen") {
@@ -154,7 +160,8 @@ fun AppScreen(
                     listOf("Веня Дыркин",
                         "Лётная школа",
                         "Avanti"
-                        )
+                        ),
+                    viewModelState
                     )
                 isShowBottomBar.value = true
             }
@@ -169,7 +176,7 @@ fun AppScreen(
                             "Место, время",
                             "Место, время",
                             "Место, время",
-                        )
+                        ),
                     )
                 isShowBottomBar.value = true
             }

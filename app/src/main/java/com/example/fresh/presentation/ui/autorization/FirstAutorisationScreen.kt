@@ -75,6 +75,26 @@ fun AutorisationScreen(navController: NavHostController) {
                     style = TextStyle(color = colorResource(id = R.color.white), fontSize = 16.sp)
                 )
             }
+
+
+
+            // УДАЛИТЬ!!!!!
+            Button(
+                onClick = {
+                    navController.navigate("homeScreen")
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(id = R.color.orange)
+                ),
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .size(width = 320.dp, height = 50.dp)
+            ) {
+                Text(
+                    text = "Вход без аккаунта",
+                    style = TextStyle(color = colorResource(id = R.color.white), fontSize = 16.sp)
+                )
+            }
         }
 
 
