@@ -1,6 +1,7 @@
 package com.example.fresh.data.repositories
 
 import androidx.lifecycle.MutableLiveData
+import com.example.fresh.domain.models.User
 import com.example.fresh.presentation.viewModels.AuthState
 import com.google.firebase.Firebase
 import com.google.firebase.auth.EmailAuthProvider
@@ -9,32 +10,22 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 
 class AuthAppRepository() {
-
+    val rep = Repository()
     var firebaseAuth : FirebaseAuth = Firebase.auth
-
-    var userLiveData : MutableLiveData<FirebaseUser?>
-
-    var errorMessageLiveData : MutableLiveData<String>
-
-    var authStateLiveData: MutableLiveData<AuthState>
-
-    val rep = UserRepository()
-
+    var firebaseUserLiveData = MutableLiveData<FirebaseUser?>()
+    var userInfoLiveData = MutableLiveData<User?>()
+    var errorMessageLiveData : MutableLiveData<String> = MutableLiveData()
+    var authStateLiveData: MutableLiveData<AuthState> = MutableLiveData()
+    var accDeleted: MutableLiveData<Boolean> = MutableLiveData(false)
 
     init {
-        userLiveData = MutableLiveData<FirebaseUser?>()
-
-        errorMessageLiveData = MutableLiveData()
-
-        authStateLiveData = MutableLiveData()
-
         firebaseAuth.addAuthStateListener { auth: FirebaseAuth ->
             val user = auth.currentUser
             if (user != null) {
-                userLiveData.postValue(user)
+                firebaseUserLiveData.postValue(user)
                 authStateLiveData.postValue(AuthState.AUTHENTICATED)
             } else {
-                userLiveData.postValue(null)
+                firebaseUserLiveData.postValue(null)
                 authStateLiveData.postValue(AuthState.UNAUTHENTICATED)
             }
         }
@@ -45,8 +36,8 @@ class AuthAppRepository() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val currentUser = FirebaseAuth.getInstance().currentUser
-                    userLiveData.postValue(currentUser)
-                    userLiveData.value?.sendEmailVerification()
+                    firebaseUserLiveData.postValue(currentUser)
+                    firebaseUserLiveData.value?.sendEmailVerification()
                     authStateLiveData.postValue(AuthState.AUTHENTICATED)
                 } else {
                     errorMessageLiveData.postValue(task.exception!!.message)
@@ -60,10 +51,10 @@ class AuthAppRepository() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user = firebaseAuth.currentUser
-                    userLiveData.postValue(user)
-                    val userInfo = rep.getUser(userLiveData.value?.uid)
-                    val role = AuthState.valueOf(userInfo?.role.toString())
-                    authStateLiveData.postValue(role)
+                    firebaseUserLiveData.postValue(user)
+                    rep.getUserInfo(firebaseUserLiveData.value?.uid)
+                    //val role = AuthState.valueOf(userInfoLiveData.value?.role.toString())
+                    authStateLiveData.postValue(AuthState.AUTHENTICATED)
                 } else {
                     errorMessageLiveData.postValue(task.exception!!.message)
                 }
@@ -78,8 +69,9 @@ class AuthAppRepository() {
         val user = firebaseAuth.currentUser
         user?.delete()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                userLiveData.postValue(null)
+                firebaseUserLiveData.postValue(null)
                 authStateLiveData.postValue(AuthState.UNAUTHENTICATED)
+                accDeleted.value = true
             } else {
                 errorMessageLiveData.postValue(task.exception!!.message)
             }

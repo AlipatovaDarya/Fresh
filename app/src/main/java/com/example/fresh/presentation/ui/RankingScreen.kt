@@ -18,6 +18,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,23 +31,32 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.fresh.R
 import com.example.fresh.presentation.ui.common.TopBar
+import com.example.fresh.presentation.viewModels.AuthViewModel
+import com.example.fresh.presentation.viewModels.AuthorViewModel
 
 @Composable
-fun RankingScreen(navController: NavHostController, sortedAuthors: List<String>, sortedVisitors: List<String>) {
+fun RankingScreen(
+    navController: NavHostController,
+    viewModelState: AuthViewModel
+) {
     Column(
         modifier = Modifier
             .background(color = colorResource(id = R.color.beige))
     ) {
-        TopBar("Рейтинги", true, true, navController)
+        TopBar("Рейтинги", true, navController)
 
-        var selectedButton = remember { mutableStateOf(1) }
-        val data = remember { mutableStateOf(sortedAuthors) }
+        val selectedButton = remember { mutableStateOf(1) }
+        val viewModel = AuthorViewModel()
+        LaunchedEffect(Unit){
+            viewModel.getAuthors()
+        }
+        val sortedAuthors = viewModel.authorsLiveData.observeAsState()
+        //val data = remember { mutableStateOf(sortedAuthors) }
 
         Row(Modifier.padding(16.dp)) {
             Button(
                 onClick = {
                     selectedButton.value = 1
-                    data.value = sortedAuthors
                 },
                 modifier = Modifier
                     .weight(1f)
@@ -60,7 +71,7 @@ fun RankingScreen(navController: NavHostController, sortedAuthors: List<String>,
                 )
             }
 
-            Button(
+            /*Button(
                 onClick = {
                     selectedButton.value = 2
                     data.value = sortedVisitors
@@ -76,7 +87,7 @@ fun RankingScreen(navController: NavHostController, sortedAuthors: List<String>,
                     )
 
                 //if (selectedButton.value == 1)
-            }
+            }*/
 
         }
 
@@ -93,7 +104,7 @@ fun RankingScreen(navController: NavHostController, sortedAuthors: List<String>,
                 verticalArrangement = Arrangement.Top,
             ) {
                 var i: Long = 1
-                items(data.value) { item ->
+                items(sortedAuthors.value!!) { item ->
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = colorResource(id = R.color.orange)
@@ -119,7 +130,7 @@ fun RankingScreen(navController: NavHostController, sortedAuthors: List<String>,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = item,
+                                text = item?.name!!,
                                 style = TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.white)
                                 )
                             )

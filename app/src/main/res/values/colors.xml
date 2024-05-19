@@ -12,8 +12,11 @@
     <color name="turquoise">#FFBBDDDB</color>
     <color name="light_pink">#FFF6C2B2</color>
     <color name="lilac">#FFCBBECF</color>
+    <color name="rich_lilac">#FFD7BAE0</color>
     <color name="dark_gray">#3A3A3A</color>
-    <color name="beige">#FFF5EDDE</color>
+    <color name="beige">#FFFFF2E1</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="dark_red">#FFA92318</color>
+
 
 </resources>

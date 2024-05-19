@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fresh.R
 import com.example.fresh.presentation.ui.common.MySnackBar
@@ -45,7 +44,6 @@ fun LoginScreen(navController: NavHostController, viewModelState: AuthViewModel)
         TopBar(
             currentScreen = stringResource(id = R.string.log_in),
             arrowBack = true,
-            moreVirtLogout = false,
             navController = navController
         )
 
@@ -117,6 +115,11 @@ fun LoginScreen(navController: NavHostController, viewModelState: AuthViewModel)
                     } else{
                         viewModelState.loginUser(textEmail.value, textPassword.value)
                         navController.navigate("homeScreen")
+                        /*if(viewModelState.authStateLiveData.value == AuthState.AUTHENTICATED || viewModelState.authStateLiveData.value == AuthState.ADMIN){
+                            navController.navigate("homeScreen")
+                        } else{
+                            isCorrectAll.value = false
+                        }*/
                     }
                 },
                 colors = ButtonDefaults.buttonColors(

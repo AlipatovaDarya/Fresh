@@ -1,10 +1,10 @@
 package com.example.fresh.domain.models
 
 data class Author(
-    val id: Long,
-    val name: String,
-    var score: Long = 0L,
+    val id: String,
+    val name: String?,
     val description: String?,
     var isExpert: Boolean = false,
+    var score: Long = 0L,
 )
 

@@ -1,10 +1,9 @@
 package com.example.fresh.domain.models
 
-import java.util.Date
-
 data class Event(
-    val id: Long,
-    val time : Date?,
+    val id: String,
     val address: String?,
     val description: String?,
+    val status: String?,
+    val time: com.google.firebase.Timestamp?,
 )

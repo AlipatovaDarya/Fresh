@@ -1,5 +1,7 @@
 package com.example.fresh.presentation.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,23 +16,48 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavHostController
 import com.example.fresh.R
+import com.example.fresh.domain.models.Author
 import com.example.fresh.presentation.ui.common.TopBar
+import com.example.fresh.presentation.viewModels.AuthViewModel
+import com.example.fresh.presentation.viewModels.AuthorViewModel
 
 @Composable
-fun AuthorListScreen(navController: NavHostController, Authors: List<String>) {
+fun AuthorListScreen(
+    navController: NavHostController,
+    viewModelState: AuthViewModel
+) {
     Column(
         modifier = Modifier
             .background(color = colorResource(id = R.color.beige))
     ) {
-        TopBar("Авторы", true, true, navController)
+        val authors : State<List<Author?>?>
+        val viewModel = AuthorViewModel()
+        val pageName: String
+        if(viewModelState.curPageIDLiveData.value == "authors"){
+            pageName = "Авторы"
+            viewModel.getAuthors()
+
+            authors = viewModel.authorsLiveData.observeAsState()
+        } else if(viewModelState.curPageIDLiveData.value == "experts"){
+            pageName = "Эксперты"
+            viewModel.getExperts()
+            authors = viewModel.expertsLiveData.observeAsState()
+        } else{
+            pageName = ""
+            authors = MutableLiveData<List<Author?>?>().observeAsState()
+        }
+        TopBar(pageName, true, navController)
 
         Column(
             verticalArrangement = Arrangement.Top,
@@ -38,40 +65,42 @@ fun AuthorListScreen(navController: NavHostController, Authors: List<String>) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            //начало дин. списка авторов
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {
-                items(Authors) { item ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorResource(id = R.color.orange)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 10.dp)
-                            .clickable {
-                                navController.navigate("authorScreen")
-                            },
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier.padding(8.dp)
+                if(authors.value != null){
+                    items(authors.value!!) { item ->
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = colorResource(id = R.color.orange)
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 10.dp)
+                                .clickable {
+                                    viewModelState.curPageIDLiveData.value = item?.id
+                                    Log.e(TAG, item?.id!!)
+                                    navController.navigate("authorScreen")
+                                },
                         ) {
-                            Text(
-                                text = item,
-                                style = TextStyle(
-                                    fontSize = 14.sp, color = colorResource(id = R.color.white)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Text(
+                                    text = item?.name!!,
+                                    style = TextStyle(
+                                        fontSize = 14.sp, color = colorResource(id = R.color.white)
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
 
+                    }
                 }
             }
-            //конец дин. списка авторов
         }
     }
 }

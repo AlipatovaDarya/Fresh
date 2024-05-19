@@ -7,18 +7,14 @@ import com.google.firebase.auth.FirebaseUser
 
 class AuthViewModel() : ViewModel() {
 
-    var authAppRepository: AuthAppRepository
-    var userLiveData : MutableLiveData<FirebaseUser?>
-    var errorMessageLiveData : MutableLiveData<String>
-    var authStateLiveData: MutableLiveData<AuthState>
+    var authAppRepository: AuthAppRepository = AuthAppRepository()
+    var userLiveData : MutableLiveData<FirebaseUser?> = authAppRepository.firebaseUserLiveData
+    var errorMessageLiveData : MutableLiveData<String> = authAppRepository.errorMessageLiveData
+    var authStateLiveData: MutableLiveData<AuthState> = authAppRepository.authStateLiveData
+    var curPageIDLiveData = MutableLiveData("")
+    var accDeleted = authAppRepository.accDeleted
+    //var loggedOut  = MutableLiveData(false)
 
-
-    init {
-        authAppRepository = AuthAppRepository()
-        userLiveData = authAppRepository.userLiveData
-        errorMessageLiveData = authAppRepository.errorMessageLiveData
-        authStateLiveData = authAppRepository.authStateLiveData
-    }
 
     fun registerUser(email: String, password: String){
         authAppRepository.registerUser(email, password)

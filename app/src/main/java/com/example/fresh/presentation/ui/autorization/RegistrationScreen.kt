@@ -1,6 +1,5 @@
 package com.example.fresh.presentation.ui.autorization
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,10 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fresh.R
-import com.example.fresh.data.repositories.UserRepository
 import com.example.fresh.domain.models.User
 import com.example.fresh.presentation.ui.common.MySnackBar
 import com.example.fresh.presentation.ui.common.TopBar
@@ -53,7 +50,6 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
         TopBar(
             currentScreen = stringResource(id = R.string.registration),
             arrowBack = true,
-            moreVirtLogout = false,
             navController = navController
         )
 
@@ -101,7 +97,11 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectEmail.value)) {
-                        Icon(Icons.Filled.Close, contentDescription = "Введите email", tint = Color.Red)
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Введите email",
+                            tint = Color.Red
+                        )
                     }
                 }
             )
@@ -125,13 +125,17 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                     name.value = it
                     //nameWasEntered.value = true
                 },
-                label = {Text(stringResource(id = R.string.user_name),)},
-                placeholder = { Text(stringResource(id = R.string.enter_user_name),)},
+                label = { Text(stringResource(id = R.string.user_name)) },
+                placeholder = { Text(stringResource(id = R.string.enter_user_name)) },
                 isError = isEnteredData.value && !isCorrectName.value,
                 modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectName.value)) {
-                        Icon(Icons.Filled.Close, contentDescription = "Некорректный ввод", tint = Color.Red)
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Некорректный ввод",
+                            tint = Color.Red
+                        )
                     }
                 },
             )
@@ -156,13 +160,17 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                     lastName.value = it
                     //lastNameWasEntered.value = true
                 },
-                label = {Text("Фамилия")},
-                placeholder = { Text("Введите фамилию")},
+                label = { Text("Фамилия") },
+                placeholder = { Text("Введите фамилию") },
                 isError = isEnteredData.value && !isCorrectLastName.value,
                 modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectLastName.value)) {
-                        Icon(Icons.Filled.Close, contentDescription = "Некорректный ввод", tint = Color.Red)
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Некорректный ввод",
+                            tint = Color.Red
+                        )
                     }
                 },
             )
@@ -195,7 +203,11 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                 modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectPassword1.value)) {
-                        Icon(Icons.Filled.Close, contentDescription = "Введите имя пользователя", tint = Color.Red)
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Введите имя пользователя",
+                            tint = Color.Red
+                        )
                     }
                 }
             )
@@ -218,13 +230,17 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                     password2.value = it
                     //password2WasEntered.value = true
                 },
-                label = {Text(stringResource(id = R.string.confirm_password))},
+                label = { Text(stringResource(id = R.string.confirm_password)) },
                 placeholder = { Text(stringResource(id = R.string.enter_password2)) },
                 isError = isEnteredData.value && !isCorrectPassword2.value,
                 modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
-                    if(isEnteredData.value && !isCorrectPassword2.value){
-                        Icon(Icons.Filled.Close, contentDescription = "Пароли не совпадают", tint = Color.Red)
+                    if (isEnteredData.value && !isCorrectPassword2.value) {
+                        Icon(
+                            Icons.Filled.Close,
+                            contentDescription = "Пароли не совпадают",
+                            tint = Color.Red
+                        )
 
                     }
                     /*if (!(isEnteredData.value && !isCorrectPassword1.value)) {
@@ -245,32 +261,32 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
             val isCorrectAll = remember { mutableStateOf(true) }
             //var error = ""
             val userViewModel = UserViewModel()
-
+            val correctUser = viewModelState.userLiveData.observeAsState()
             Button(
                 modifier = Modifier.padding(top = 20.dp),
                 onClick = {
                     isEnteredData.value = true
 
-                    if(inputViewModel.isRegisterCorrect()){
+                    if (inputViewModel.isRegisterCorrect()) {
                         viewModelState.registerUser(email.value, password1.value)
-                            if(viewModelState.userLiveData.value?.uid != null){
-                                isCorrectAll.value = true
-                                userViewModel.addUser(
-                                    User(
-                                        viewModelState.userLiveData.value?.uid!!,
-                                        name.value,
-                                        lastName.value,
-                                        email.value,
-                                        AuthState.AUTHENTICATED,
-                                        0L
-                                    )
+                        if (correctUser.value?.uid != null) {
+                            isCorrectAll.value = true
+                            userViewModel.addUser(
+                                User(
+                                    viewModelState.userLiveData.value?.uid!!,
+                                    name.value,
+                                    lastName.value,
+                                    email.value,
+                                    AuthState.AUTHENTICATED,
+                                    0L
                                 )
-                                navController.navigate("homeScreen")
-                            }else{
-                                isCorrectAll.value = false
-                                viewModelState.deleteAccount()
-                            }
-                    } else{
+                            )
+                            navController.navigate("homeScreen")
+                        }/* else {
+                            isCorrectAll.value = false
+                            viewModelState.deleteAccount()
+                        }*/
+                    } else {
                         //Log.e("МОЯ ОШИБКА", "Заполните корректно все поля")
                         //error = "Заполните корректно все поля"
                         isCorrectAll.value = false
@@ -284,7 +300,7 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                 Text(stringResource(id = R.string.to_register))
             }
 
-            if(!isCorrectAll.value){
+            if (!isCorrectAll.value) {
                 MySnackBar("Заполните корректно все поля")
             }
 
