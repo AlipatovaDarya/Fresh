@@ -19,6 +19,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.fresh.R
+import com.example.fresh.domain.models.Author
 import com.example.fresh.presentation.ui.common.TopBar
 import com.example.fresh.presentation.viewModels.AuthViewModel
 import com.example.fresh.presentation.viewModels.AuthorViewModel
@@ -46,12 +48,10 @@ fun RankingScreen(
         TopBar("Рейтинги", true, navController)
 
         val selectedButton = remember { mutableStateOf(1) }
+        val authors : State<List<Author?>?>
         val viewModel = AuthorViewModel()
-        LaunchedEffect(Unit){
-            viewModel.getAuthors()
-        }
-        val sortedAuthors = viewModel.authorsLiveData.observeAsState()
-        //val data = remember { mutableStateOf(sortedAuthors) }
+        viewModel.getSortedAuthors()
+        authors = viewModel.authorsLiveData.observeAsState()
 
         Row(Modifier.padding(16.dp)) {
             Button(
@@ -90,9 +90,6 @@ fun RankingScreen(
             }*/
 
         }
-
-
-
         Column(verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -104,40 +101,48 @@ fun RankingScreen(
                 verticalArrangement = Arrangement.Top,
             ) {
                 var i: Long = 1
-                items(sortedAuthors.value!!) { item ->
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorResource(id = R.color.orange)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 10.dp)
-                            .clickable {
-                                navController.navigate("authorScreen")
-                            },
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Start,
-                            modifier = Modifier.padding(8.dp)
+                if(authors.value != null){
+                    items(authors.value!!) { item ->
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = colorResource(id = R.color.orange)
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 10.dp)
+                                .clickable {
+                                    navController.navigate("authorScreen")
+                                },
                         ) {
-                            Text(
-                                text = i.toString(),
-                                modifier = Modifier.padding(start = 10.dp, end = 2.dp),
-                                color = colorResource(
-                                    id = R.color.white
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.padding(8.dp)
+                            ) {
+                                Text(
+                                    text = i.toString(),
+                                    modifier = Modifier.padding(start = 10.dp, end = 2.dp),
+                                    color = colorResource(
+                                        id = R.color.white
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = item?.name!!,
-                                style = TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.white)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = item?.name!!,
+                                    style = TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.white)
+                                    )
                                 )
-                            )
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text(
+                                    text = item?.score.toString(),
+                                    style = TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.white)
+                                    )
+                                )
+                            }
+                            i++
                         }
-                        i++
-                    }
 
+                    }
                 }
             }
             //конец дин. списка авторов

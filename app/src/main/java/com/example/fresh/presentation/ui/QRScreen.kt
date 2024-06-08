@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,6 +29,7 @@ import androidx.navigation.NavHostController
 import com.example.fresh.R
 import com.example.fresh.presentation.ui.common.MySnackBar
 import com.example.fresh.presentation.viewModels.AuthViewModel
+import com.example.fresh.presentation.viewModels.FormViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
 
@@ -40,7 +42,9 @@ fun QRScreen(
     val dataReceived = remember { mutableStateOf(false) }
     val data = remember { mutableStateOf("") }
     val hasCameraPermission = remember { mutableStateOf(false) }
-
+    val viewModel = FormViewModel()
+    viewModel.getCurrentEventID(viewModelState.userLiveData.value?.uid)
+    //val eventID = viewModel.curEvent.observeAsState()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
@@ -51,12 +55,12 @@ fun QRScreen(
         contract = ScanContract(),
         onResult = { result ->
             if (result != null) {
-                data.value = result.contents.toString()
+                //data.value = result.contents.toString()
+                viewModelState.curItemIDLiveData.value = result.contents.toString()
                 dataReceived.value = true
-                if (data.value == "Hello fresh") {
-                    viewModelState.curPageIDLiveData.value = data.value
-                    navController.navigate("formScreen")
-                }
+                //if(eventID.value == data.value){
+                navController.navigate("formScreen")
+                //}
             }
         }
     )
@@ -96,9 +100,9 @@ fun QRScreen(
             }
         }
 
-        if (dataReceived.value) {
+        /*if (dataReceived.value) {
             MySnackBar(str = data.value)
-        }
+        }*/
     }
     /*val onBackPressedCallback = remember {
         object : OnBackPressedCallback(true) {

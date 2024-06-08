@@ -44,12 +44,11 @@ fun AuthorListScreen(
         val authors : State<List<Author?>?>
         val viewModel = AuthorViewModel()
         val pageName: String
-        if(viewModelState.curPageIDLiveData.value == "authors"){
+        if(viewModelState.curPageLiveData.value == "authors"){
             pageName = "Авторы"
             viewModel.getAuthors()
-
             authors = viewModel.authorsLiveData.observeAsState()
-        } else if(viewModelState.curPageIDLiveData.value == "experts"){
+        } else if(viewModelState.curPageLiveData.value == "experts"){
             pageName = "Эксперты"
             viewModel.getExperts()
             authors = viewModel.expertsLiveData.observeAsState()
@@ -79,7 +78,9 @@ fun AuthorListScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = 24.dp, vertical = 10.dp)
                                 .clickable {
-                                    viewModelState.curPageIDLiveData.value = item?.id
+                                    viewModelState.curItemIDLiveData.value = item?.id
+                                    //Yb5CyY3RUIdK2HStz5Is
+                                    //viewModelState.curPageIDLiveData.value = "Yb5CyY3RUIdK2HStz5Is"
                                     Log.e(TAG, item?.id!!)
                                     navController.navigate("authorScreen")
                                 },

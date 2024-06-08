@@ -1,5 +1,6 @@
 package com.example.fresh.presentation.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,12 +30,15 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.example.fresh.R
 import androidx.navigation.NavHostController
+import com.example.fresh.domain.models.Answer
+import com.example.fresh.domain.models.AudioLink
 import com.example.fresh.presentation.ui.common.TopBar
 import com.example.fresh.presentation.viewModels.AuthState
 import com.example.fresh.presentation.viewModels.AuthViewModel
 import com.example.fresh.presentation.viewModels.UserViewModel
 
 
+@SuppressLint("ResourceAsColor")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(navController: NavHostController, viewModelState: AuthViewModel) {
@@ -186,6 +190,18 @@ fun AccountScreen(navController: NavHostController, viewModelState: AuthViewMode
                     onDismissRequest = { deleteAcc = false },
                     title = { Text("Удаление аккаунта") }, //Text("Удаление аккаунта")
                     text = { Text("Вы действительно хотите удалить аккаунт?") },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                deleteAcc = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(id = R.color.lilac)
+                            ),
+                        ) {
+                            Text("Отмена")
+                        }
+                    },
                     confirmButton = {
                         Button(
                             onClick = {
@@ -200,18 +216,6 @@ fun AccountScreen(navController: NavHostController, viewModelState: AuthViewMode
                             Text("Удалить")
                         }
                     },
-                    dismissButton = {
-                        Button(
-                            onClick = {
-                                deleteAcc = false
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = colorResource(id = R.color.lilac)
-                            ),
-                        ) {
-                            Text("Отмена")
-                        }
-                    }
                 )
             }
 
@@ -221,6 +225,18 @@ fun AccountScreen(navController: NavHostController, viewModelState: AuthViewMode
                     onDismissRequest = { logOut = false },
                     title = { Text("Выход из аккаунта") }, //Text("Удаление аккаунта")
                     text = { Text("Вы действительно хотите выйти из аккаунта?") },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                logOut = false
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(id = R.color.lilac)
+                            ),
+                        ) {
+                            Text("Отмена")
+                        }
+                    },
                     confirmButton = {
                         Button(
                             onClick = {
@@ -235,18 +251,6 @@ fun AccountScreen(navController: NavHostController, viewModelState: AuthViewMode
                             Text("Выйти")
                         }
                     },
-                    dismissButton = {
-                        Button(
-                            onClick = {
-                                logOut = false
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = colorResource(id = R.color.lilac)
-                            ),
-                        ) {
-                            Text("Отмена")
-                        }
-                    }
                 )
             }
             if (accState.value == AuthState.UNAUTHENTICATED) {

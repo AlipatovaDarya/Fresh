@@ -6,11 +6,23 @@ import com.example.fresh.data.repositories.Repository
 import com.example.fresh.domain.models.Answer
 import com.example.fresh.domain.models.GeneralAnswer
 import com.example.fresh.domain.models.Question
+import com.example.fresh.domain.models.Vote
 
 class FormViewModel() : ViewModel() {
     private val rep = Repository()
     val questionsLiveData = MutableLiveData<List<Question?>>()
-    val isCorrectEnter = MutableLiveData<Boolean>(true)
+    val isCorrectEnter = MutableLiveData(true)
+    val curEvent = MutableLiveData<String?>(null)
+
+
+    fun getCurrentEventID(uid: String?){
+        if(uid == null){
+            return
+        }
+        rep.getCurrentEventID(uid){id ->
+            curEvent.postValue(id)
+        }
+    }
 
     fun getFormQuestions(eventID: String?){
         rep.getFormQuestions(eventID) { questions ->
@@ -18,9 +30,23 @@ class FormViewModel() : ViewModel() {
         }
     }
 
-    fun addAnswers(list : List<GeneralAnswer?>){
+    fun addAnswers(list : List<Answer?>){
+        for(answer in list){
+            if(answer?.eventID != null){
+                rep.addAnswer(answer)
+            }
+        }
 
     }
+
+    fun addVotes(list : List<Vote?>){
+        for(vote in list){
+            if(vote?.eventID != null){
+                rep.addVote(vote)
+            }
+        }
+    }
+
 
     fun isEnterCorrect(list : List<GeneralAnswer?>) : Boolean{
         for(ans in list){

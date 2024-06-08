@@ -1,5 +1,7 @@
 package com.example.fresh.presentation.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,7 +69,7 @@ fun EventsListScreen(
                     selectedButton.value = true
                 },
                 modifier = Modifier
-                    .padding(end = 36.dp),
+                    .padding(end = 16.dp),
                 colors = if (selectedButton.value) ButtonDefaults.buttonColors(
                     containerColor = colorResource(
                         id = R.color.lilac
@@ -83,7 +86,7 @@ fun EventsListScreen(
                     else TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.lilac))
                 )
             }
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(2.dp))
             Button(
                 onClick = {
                     selectedButton.value = false
@@ -104,10 +107,8 @@ fun EventsListScreen(
                     else TextStyle(fontSize = 14.sp, color = colorResource(id = R.color.white))
                 )
             }
-
         }
 
-        var showDialogRegisration = remember { mutableStateOf(false) }
 
         Column(
             verticalArrangement = Arrangement.Top,
@@ -127,108 +128,149 @@ fun EventsListScreen(
                 verticalArrangement = Arrangement.Top,
             ) {
                 items(events.value) { event ->
-                    val isRegistered = remember { mutableStateOf(false) }
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = colorResource(id = R.color.orange)
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 12.dp)
-                            .clickable {
-                                navController.navigate("eventScreen")
-                                viewModelState.curPageIDLiveData.value = event.id
-                            },
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier.padding(8.dp)
-                        ) {
-                            val time = viewModel.formatTimeStampToMoscowTime(event.time!!, LocalContext.current)
-                            Text(
-                                text = "Фреш\n${time} Мск",
-                                style = TextStyle(
-                                    fontSize = 18.sp, color = colorResource(id = R.color.white)
-                                )
-                            )
-                            Spacer(modifier = Modifier.width(2.dp))
-                            if (!selectedButton.value) {
-                                Button(
-                                    onClick = {
-                                        showDialogRegisration.value = true
-                                    },
-                                    colors = if (isRegistered.value) ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(id = R.color.white)
-                                    ) else ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(
-                                            id = R.color.green
-                                        )
-                                    ),
-                                    modifier = Modifier.padding(start = 50.dp)
-
-                                ) {
-                                    Text(
-                                        text = if (!isRegistered.value) "регистрация" else "вы зарегистрированы",
-                                        style = if (isRegistered.value) TextStyle(
-                                            fontSize = 13.sp,
-                                            color = colorResource(id = R.color.green)
-                                        ) else TextStyle(
-                                            fontSize = 12.sp,
-                                            color = colorResource(id = R.color.white)
-                                        )
-                                    )
-                                }
-                                if (showDialogRegisration.value) {
-                                    AlertDialog(
-                                        onDismissRequest = {
-                                            showDialogRegisration.value = false
-                                        },
-                                        title = { Text("Регистрация") },
-                                        text = { Text("Вы действительно хотите зарегистрироваться на мероприятие?") },
-                                        confirmButton = {
-                                            Button(
-                                                onClick = {
-                                                    showDialogRegisration.value = false
-                                                    isRegistered.value = true
-                                                },
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = colorResource(id = R.color.orange)
-                                                ),
-                                            ) {
-                                                Text("Зарегистрироваться")
-                                            }
-                                        },
-                                        dismissButton = {
-                                            Button(
-                                                onClick = {
-                                                    showDialogRegisration.value = false
-                                                },
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = colorResource(id = R.color.lilac)
-                                                ),
-                                            ) {
-                                                Text("Отмена")
-                                            }
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-
-
-            /*LazyColumn(
-
-            ) {
-                itemsIndexed(data.value) {index, item ->
-
+                    eventItem(event, viewModel, viewModelState, navController, selectedButton.value)
                 }
             }
-            //конец дин. списка*/
         }
     }
+}
+
+@Composable
+fun eventItem(
+    event: Event,
+    viewModel: EventViewModel,
+    viewModelState: AuthViewModel,
+    navController: NavHostController,
+    selectedButtonLast: Boolean
+) {
+    //viewModel.isRegisteredUser(viewModelState.userLiveData.value?.uid, event.id)
+    val selectedButton = remember { mutableStateOf(selectedButtonLast) }
+    var showDialogRegisration = remember { mutableStateOf(false) }
+    val isRegistered = event.curUserIsRegister.observeAsState(false)
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.orange)
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 12.dp)
+            .clickable {
+                if (event.status == "finished") {
+                    navController.navigate("eventScreen")
+                    viewModelState.curItemIDLiveData.value = event.id
+                }
+            },
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.fillMaxWidth().padding(8.dp)
+        ) {
+            val time = viewModel.formatTimeStampToMoscowTime(
+                event.time!!,
+                LocalContext.current
+            )
+            Text(
+                text = "Фреш\n${time} Мск",
+                style = TextStyle(
+                    fontSize = 18.sp, color = colorResource(id = R.color.white)
+                )
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            //val isRegistered = remember { mutableStateOf(isRegisteredData.value) }
+            if (!selectedButton.value) {
+                Button(
+                    onClick = {
+                        showDialogRegisration.value = true
+                    },
+                    colors = if (isRegistered.value == true) ButtonDefaults.buttonColors(
+                        containerColor = colorResource(id = R.color.white)
+                    ) else ButtonDefaults.buttonColors(
+                        containerColor = colorResource(
+                            id = R.color.green
+                        )
+                    ),
+                    modifier = Modifier.padding(end = 16.dp)
+
+                ) {
+                    Text(
+                        text = if (isRegistered.value == false) "регистрация" else "вы зарегистрированы",
+                        style = if (isRegistered.value == true) TextStyle(
+                            fontSize = 13.sp,
+                            color = colorResource(id = R.color.green)
+                        ) else TextStyle(
+                            fontSize = 12.sp,
+                            color = colorResource(id = R.color.white)
+                        )
+                    )
+                }
+                if (showDialogRegisration.value) {
+                    val eventInfo = "Вечер Фреш пройдёт ${
+                        viewModel.formatTimeStampToMoscowTime(
+                            event.time,
+                            LocalContext.current
+                        )
+                    } по адресу ${event.address}\n"
+                    AlertDialog(
+                        onDismissRequest = {
+                            showDialogRegisration.value = false
+                        },
+                        title = {
+                            if (isRegistered.value == false) Text("Регистрация") else Text(
+                                "Отмена регистрации"
+                            )
+                        },
+                        text = {
+                            if (isRegistered.value == false) Text(
+                                "${eventInfo}Вы действительно хотите зарегистрироваться на мероприятие?"
+                            )
+                            else Text("${eventInfo}Вы действительно хотите отменить регистрацию на мероприятие?")
+                        },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    showDialogRegisration.value = false
+                                    if (isRegistered.value == false) {
+                                        viewModel.registerUserToEvent(
+                                            viewModelState.userLiveData.value?.uid.toString(),
+                                            event.id
+                                        )
+                                        event.curUserIsRegister.value = true
+                                    } else {
+                                        viewModel.deleteUserFromEvent(
+                                            viewModelState.userLiveData.value?.uid.toString(),
+                                            event.id
+                                        )
+                                        event.curUserIsRegister.value = false
+                                    }
+                                    //viewModel.isRegisteredUser(viewModelState.userLiveData.value?.uid, event.id)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.orange)
+                                ),
+                            ) {
+                                if (isRegistered.value == false) Text("Зарегистрироваться") else Text(
+                                    "Отменить регистрацию"
+                                )
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = {
+                                    showDialogRegisration.value = false
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = colorResource(id = R.color.lilac)
+                                ),
+                            ) {
+                                Text("Отмена")
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+
 }

@@ -167,7 +167,6 @@ fun AppScreen(
                 EventScreen(
                     navController = navController,
                     viewModelState,
-                    Event("id", "adress0", "описание", "finished", Timestamp(0, 0))
                 )
                 isShowBottomBar.value = true
             }

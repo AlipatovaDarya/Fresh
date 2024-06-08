@@ -35,6 +35,9 @@ fun HomeScreen(navController: NavHostController, viewModelState: AuthViewModel) 
         modifier = Modifier
             .background(color = colorResource(id = R.color.beige))
     ) {
+        /*viewModelState.curItemIDLiveData.value = "ghwoAdiM5ary9DWPCUeb"
+        //if(eventID.value == data.value){
+        navController.navigate("formScreen")*/
 
         TopBar("", false, navController)
 
@@ -83,7 +86,7 @@ fun HomeScreen(navController: NavHostController, viewModelState: AuthViewModel) 
                         containerColor = colorResource(id = R.color.green)
                     ),
                     onClick = {
-                        viewModelState.curPageIDLiveData.value = "authors"
+                        viewModelState.curPageLiveData.value = "authors"
                         navController.navigate("authorListScreen")
                     },
                     shape = RoundedCornerShape(10.dp),
@@ -122,7 +125,7 @@ fun HomeScreen(navController: NavHostController, viewModelState: AuthViewModel) 
                         containerColor = colorResource(id = R.color.rich_lilac)
                     ),
                     onClick = {
-                        viewModelState.curPageIDLiveData.value = "experts"
+                        viewModelState.curPageLiveData.value = "experts"
                         navController.navigate("authorListScreen")
                     },
                     shape = RoundedCornerShape(10.dp),

@@ -11,7 +11,8 @@ class AuthViewModel() : ViewModel() {
     var userLiveData : MutableLiveData<FirebaseUser?> = authAppRepository.firebaseUserLiveData
     var errorMessageLiveData : MutableLiveData<String> = authAppRepository.errorMessageLiveData
     var authStateLiveData: MutableLiveData<AuthState> = authAppRepository.authStateLiveData
-    var curPageIDLiveData = MutableLiveData("")
+    var curItemIDLiveData = MutableLiveData("")
+    var curPageLiveData = MutableLiveData("")
     var accDeleted = authAppRepository.accDeleted
     //var loggedOut  = MutableLiveData(false)
 

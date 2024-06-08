@@ -5,6 +5,7 @@ data class Author(
     val name: String?,
     val description: String?,
     var isExpert: Boolean = false,
-    var score: Long = 0L,
+    var score : Int = 0,
+    var audioLinks : MutableList<AudioLink> = mutableListOf()
 )
 
