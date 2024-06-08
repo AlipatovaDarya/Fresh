@@ -166,7 +166,6 @@ class Repository {
                         document.getTimestamp("time"),
                         MutableLiveData(flag)
                     )
-                    //eventInfoLiveData.postValue(event)
                     listener(event!!)
                     Log.d(ContentValues.TAG, "DocumentSnapshot data: ${document.data}")
                 } else {
