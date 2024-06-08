@@ -93,7 +93,7 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                 label = { Text(stringResource(id = R.string.email)) },
                 placeholder = { Text("Введите email") },
                 isError = isEnteredData.value && !isCorrectEmail.value,
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 30.dp),
+                modifier = Modifier.padding(vertical = 10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectEmail.value)) {
@@ -126,9 +126,9 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                     //nameWasEntered.value = true
                 },
                 label = { Text("Имя") },
-                placeholder = { Text(stringResource(id = R.string.enter_user_name)) },
+                placeholder = { Text("Введите имя") },
                 isError = isEnteredData.value && !isCorrectName.value,
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 30.dp),
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectName.value)) {
                         Icon(
@@ -163,7 +163,7 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                 label = { Text("Фамилия") },
                 placeholder = { Text("Введите фамилию") },
                 isError = isEnteredData.value && !isCorrectLastName.value,
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 30.dp),
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectLastName.value)) {
                         Icon(
@@ -200,7 +200,7 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                 label = { Text(stringResource(id = R.string.password)) },
                 placeholder = { Text(stringResource(id = R.string.enter_password)) },
                 isError = isEnteredData.value && !isCorrectPassword1.value,
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 30.dp),
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if ((isEnteredData.value && !isCorrectPassword1.value)) {
                         Icon(
@@ -231,9 +231,9 @@ fun RegistrationScreen(navController: NavHostController, viewModelState: AuthVie
                     //password2WasEntered.value = true
                 },
                 label = { Text(stringResource(id = R.string.confirm_password)) },
-                placeholder = { Text(stringResource(id = R.string.enter_password2)) },
+                placeholder = { Text(stringResource(id = R.string.confirm_password)) },
                 isError = isEnteredData.value && !isCorrectPassword2.value,
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 30.dp),
+                modifier = Modifier.padding(vertical = 10.dp),
                 trailingIcon = {
                     if (isEnteredData.value && !isCorrectPassword2.value) {
                         Icon(

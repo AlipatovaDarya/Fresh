@@ -231,8 +231,8 @@ class Repository {
         if (id == null) {
             return
         }
-        val docRef = db.collection("authors").document(id)
-        docRef.get()
+        db.collection("authors").document(id)
+            .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
                     val author = Author(

@@ -98,7 +98,7 @@ fun AccountScreen(navController: NavHostController, viewModelState: AuthViewMode
                             containerColor = colorResource(id = R.color.green_home)
                         ),
                     ) {
-                        Text(text = "Сохранить изменения")
+                        Text(text = "Сохранить\nизменения")
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     Button(

@@ -123,9 +123,8 @@ fun AuthorScreen(navController: NavHostController, viewModelState: AuthViewModel
                                 Log.e(TAG, audioProfiles.value.toString())
                                 items(audioProfiles.value!!){ item ->
                                     Row(modifier = Modifier.padding(8.dp)) {
-                                        Text("${item?.platform}: ")
                                         val uriHandler = LocalUriHandler.current
-                                        Text("${item?.link}: ",
+                                        Text("${item?.platform}: ",
                                             style = TextStyle(
                                                 fontSize = 12.sp,
                                                 color = Color.Blue
@@ -133,8 +132,10 @@ fun AuthorScreen(navController: NavHostController, viewModelState: AuthViewModel
                                             modifier = Modifier
                                                 .clickable {
                                                     item?.link?.let { uriHandler.openUri(it) }
-                                                }
-                                        )
+                                                })
+                                        /*Text("${item?.link}: ",
+
+                                        )*/
 
                                     }
                                 }
